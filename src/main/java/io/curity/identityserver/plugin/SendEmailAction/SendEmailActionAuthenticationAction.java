@@ -83,7 +83,7 @@ public final class SendEmailActionAuthenticationAction implements Authentication
 
         if (shouldSendEmail(authenticationAttributes))
         {
-            String recipientMail = getRecipientEmail(authenticationAttributes.getSubject());
+            @Nullable String recipientMail = getRecipientEmail(authenticationAttributes.getSubject());
 
             if (recipientMail == null)
             {
