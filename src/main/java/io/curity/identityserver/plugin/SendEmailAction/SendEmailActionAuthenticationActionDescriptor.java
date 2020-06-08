@@ -48,7 +48,6 @@ public final class SendEmailActionAuthenticationActionDescriptor implements Auth
     @Override
     public Optional<? extends ManagedObject<SendEmailActionAuthenticationActionConfig>> createManagedObject(SendEmailActionAuthenticationActionConfig configuration)
     {
-
         return Optional.empty();
     }
 

@@ -18,6 +18,7 @@ package io.curity.identityserver.plugin.SendEmailAction;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.curity.identityserver.sdk.Nullable;
 import se.curity.identityserver.sdk.attribute.AccountAttributes;
 import se.curity.identityserver.sdk.attribute.Attribute;
 import se.curity.identityserver.sdk.attribute.AuthenticationAttributes;
@@ -57,10 +58,8 @@ public final class SendEmailActionAuthenticationAction implements Authentication
     private final DateTimeFormatter _formatter;
     private final boolean _emailShouldIncludeIpAddress;
 
-
     public SendEmailActionAuthenticationAction(SendEmailActionAuthenticationActionConfig configuration)
     {
-        // TODO: Readme
         _emailSender = configuration.getEmailSender();
         _alwaysSendEmail = configuration.getAlwaysSendEmailNotification();
         _accountManager = configuration.getAccountManager();
@@ -101,7 +100,8 @@ public final class SendEmailActionAuthenticationAction implements Authentication
             catch (RuntimeException exception)
             {
                 _logger.warn(
-                        "Exception during sending of e-mail informing about a new login to: {}, with the following data. username: {}, IP: {}, User-agent: {}, time of login: {}",
+                        "Exception during sending of e-mail informing about a new login to: {}, with the following data. " +
+                        "username: {}, IP: {}, User-agent: {}, time of login: {}",
                         recipientMail,
                         authenticationAttributes.getSubject(),
                         _sessionManager.get(CLIENT_IP_ATTRIBUTE).getValue(),
@@ -115,6 +115,7 @@ public final class SendEmailActionAuthenticationAction implements Authentication
         return AuthenticationActionResult.successfulResult(authenticationAttributes);
     }
 
+    @Nullable
     private String getRecipientEmail(String subject)
     {
         if (!_accountManager.isPresent())
