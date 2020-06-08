@@ -26,7 +26,8 @@ import java.util.Optional;
 
 public interface SendEmailActionAuthenticationActionConfig extends Configuration
 {
-    @Description("When on will make the action to always send a login notification e-mail, regardless of the `sendemailaction-should-send-email` parameter value")
+    @Description("When on will make the action to always send a login notification e-mail, regardless of the " +
+            "`sendemailaction-should-send-email` parameter value")
     Boolean getAlwaysSendEmailNotification();
 
     @Description("When on will not send the user's IP address in the notification e-mail")

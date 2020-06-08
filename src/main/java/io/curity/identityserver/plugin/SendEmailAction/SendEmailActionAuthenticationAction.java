@@ -87,7 +87,8 @@ public final class SendEmailActionAuthenticationAction implements Authentication
 
             if (recipientMail == null)
             {
-                _logger.info("No email address available for user {}, skipping sending e-mail.", authenticationAttributes.getSubject());
+                _logger.info("No email address available for user {}, skipping sending e-mail.",
+                        authenticationAttributes.getSubject());
                 return AuthenticationActionResult.successfulResult(authenticationAttributes);
             }
 
@@ -100,8 +101,8 @@ public final class SendEmailActionAuthenticationAction implements Authentication
             catch (RuntimeException exception)
             {
                 _logger.warn(
-                        "Exception during sending of e-mail informing about a new login to: {}, with the following data. " +
-                        "username: {}, IP: {}, User-agent: {}, time of login: {}",
+                        "Exception during sending of e-mail informing about a new login to: {}, with the following " +
+                                "data. username: {}, IP: {}, User-agent: {}, time of login: {}",
                         recipientMail,
                         authenticationAttributes.getSubject(),
                         _sessionManager.get(CLIENT_IP_ATTRIBUTE).getValue(),
