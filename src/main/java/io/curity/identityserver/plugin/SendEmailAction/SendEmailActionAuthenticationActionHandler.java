@@ -41,6 +41,10 @@ public class SendEmailActionAuthenticationActionHandler implements ActionComplet
     @Override
     public Optional<ActionCompletionResult> get(Request request, Response response)
     {
+        /*
+         * Get data from request and set it in session. Then return a complete() result so we're sent back to the `apply`
+         * method. See the comment in SendEmailActionAuthenticationAction class for more explanation.
+         */
         _sessionManager.put(Attribute.of(CLIENT_IP_ATTRIBUTE, request.getClientIpAddress()));
         _sessionManager.put(Attribute.of(USER_AGENT_ATTRIBUTE, request.getHeaders().firstValue("User-Agent")));
         _sessionManager.put(Attribute.ofFlag(REQUEST_DATA_IN_SESSION));

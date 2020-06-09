@@ -53,7 +53,7 @@ public final class SendEmailActionAuthenticationAction implements Authentication
 
     private final boolean _alwaysSendEmail;
     private final EmailSender _emailSender;
-    private final Optional<AccountManager> _accountManager;
+    private final AccountManager _accountManager;
     private final SessionManager _sessionManager;
     private final DateTimeFormatter _formatter;
     private final boolean _emailShouldIncludeIpAddress;
@@ -62,7 +62,7 @@ public final class SendEmailActionAuthenticationAction implements Authentication
     {
         _emailSender = configuration.getEmailSender();
         _alwaysSendEmail = configuration.getAlwaysSendEmailNotification();
-        _accountManager = configuration.getAccountManager();
+        _accountManager = configuration.getAccountManager().orElse(null);
         _sessionManager = configuration.getSessionManager();
         _formatter = RFC_1123_DATE_TIME.withZone(ZoneId.of("GMT"));
         _emailShouldIncludeIpAddress = !configuration.getDoNotSendIpAddressInEmail();
@@ -74,6 +74,13 @@ public final class SendEmailActionAuthenticationAction implements Authentication
                                             String authenticationTransactionId,
                                             AuthenticatorDescriptor authenticatorDescriptor)
     {
+        /*
+         To get data from the Request object we need to go through an action controller. Redirecting the flow to the
+         controller is done with returning a `pendingResult`. Then in the controller we can retrieve the data we need,
+         add it to the session and return a result of `ActionCompletionResult.complete()`, which will send us back here.
+         The REQUEST_DATA_IN_SESSION flag is stored in session to avoid a loop.
+         */
+
         Attribute requestDataInSession = _sessionManager.get(REQUEST_DATA_IN_SESSION);
 
         if (requestDataInSession == null)
@@ -119,20 +126,15 @@ public final class SendEmailActionAuthenticationAction implements Authentication
     @Nullable
     private String getRecipientEmail(String subject)
     {
-        if (!_accountManager.isPresent())
-        {
-            return subject;
-        }
-
-        AccountManager accountManager = _accountManager.get();
-        if (accountManager.useUsernameAsEmail())
+        // If there is no Account Manager passed to the plugin we assume that the username is the e-mail address.
+        if (_accountManager == null || _accountManager.useUsernameAsEmail())
         {
             return subject;
         }
 
         try
         {
-            AccountAttributes userAttributes = accountManager.getByUserName(subject);
+            AccountAttributes userAttributes = _accountManager.getByUserName(subject);
 
             if (userAttributes == null)
             {

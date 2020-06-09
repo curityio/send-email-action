@@ -17,6 +17,7 @@
 package io.curity.identityserver.plugin.SendEmailAction;
 
 import se.curity.identityserver.sdk.config.Configuration;
+import se.curity.identityserver.sdk.config.annotation.DefaultBoolean;
 import se.curity.identityserver.sdk.config.annotation.Description;
 import se.curity.identityserver.sdk.service.AccountManager;
 import se.curity.identityserver.sdk.service.EmailSender;
@@ -28,9 +29,11 @@ public interface SendEmailActionAuthenticationActionConfig extends Configuration
 {
     @Description("When on will make the action to always send a login notification e-mail, regardless of the " +
             "`sendemailaction-should-send-email` parameter value")
+    @DefaultBoolean(false)
     Boolean getAlwaysSendEmailNotification();
 
     @Description("When on will not send the user's IP address in the notification e-mail")
+    @DefaultBoolean(false)
     Boolean getDoNotSendIpAddressInEmail();
 
     EmailSender getEmailSender();
