@@ -1,6 +1,15 @@
 SendEmailAction Authentication Action Plugin
 =============================================
 
+.. image:: https://curity.io/assets/images/badges/send-email-action-quality.svg
+   :target: https://curity.io/resources/code-examples/status/
+   :alt: Quality
+
+.. image:: https://curity.io/assets/images/badges/send-email-action-availability.svg
+   :target: https://curity.io/resources/code-examples/status/
+   :alt: Availability
+
+
 A custom authentication action plugin for the Curity Identity Server. You can add the action to any authenticator to send
 an e-mail to the user whenever the given authenticator is used in the login or SSO flow. The e-mail will contain the
 username, time of login, the user-agent used to log in and, optionally, the IP address from which the login was initiated.
@@ -8,9 +17,7 @@ username, time of login, the user-agent used to log in and, optionally, the IP a
 Building the Plugin
 ~~~~~~~~~~~~~~~~~~~
 
-Ensure that the Curity Nexus server is `configured in your Maven settings
-<https://developer.curity.io/docs/latest/developer-guide/plugins/index.html#access-to-the-curity-release-repository>`_.
-Then, build the plugin by issuing the command ``mvn package``. This will produce a JAR file in the ``target`` directory,
+Build the plugin by issuing the command ``mvn package``. This will produce a JAR file in the ``target`` directory,
 which can be installed.
 
 Installing the Plugin
