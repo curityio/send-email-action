@@ -1,11 +1,11 @@
 SendEmailAction Authentication Action Plugin
 =============================================
 
-.. image:: https://curity.io/assets/images/badges/send-email-action-quality.svg
+.. image:: https://img.shields.io/badge/quality-demo-red
    :target: https://curity.io/resources/code-examples/status/
    :alt: Quality
 
-.. image:: https://curity.io/assets/images/badges/send-email-action-availability.svg
+.. image:: https://img.shields.io/badge/availability-source-blue
    :target: https://curity.io/resources/code-examples/status/
    :alt: Availability
 
