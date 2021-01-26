@@ -37,17 +37,17 @@
  *###
 #define($_body)
 
-<p>#message("sendemailaction.email.intro") <strong>$_username</strong>.</p>
-<p style="margin-bottom: 0; color: #000000;">#message("sendemailaction.email.time"):</p>
+<p>#message("authentication-action.sendemailaction.email.intro") <strong>$_username</strong>.</p>
+<p style="margin-bottom: 0; color: #000000;">#message("authentication-action.sendemailaction.email.time"):</p>
 <p style="margin-top: 0; color: #000000;"><strong>$_time</strong></p>
 
 #if($_client_ip)
-    <p style="margin-bottom: 0; color: #000000;">#message("sendemailaction.email.ip-address"):</p>
+    <p style="margin-bottom: 0; color: #000000;">#message("authentication-action.sendemailaction.email.ip-address"):</p>
     <p style="margin-top: 0; color: #000000;"><strong>$_client_ip</strong></p>
 #end
 
-<p style="margin-bottom: 0; color: #000000;">#message("sendemailaction.email.user-agent"):</p>
+<p style="margin-bottom: 0; color: #000000;">#message("authentication-action.sendemailaction.email.user-agent"):</p>
 <p style="margin-top: 0; color: #000000;"><strong>$_user_agent</strong></p>
-<p>#message("sendemailaction.email.ignore")</p>
+<p>#message("authentication-action.sendemailaction.email.ignore")</p>
 #end
 #parse("layouts/html-email")

@@ -38,16 +38,16 @@
  *###
 #define($_body)
 
-#message("sendemailaction.email.intro") $_username
+#message("authentication-action.sendemailaction.email.intro") $_username
 
-#message("sendemailaction.email.time"): $_time
+#message("authentication-action.sendemailaction.email.time"): $_time
 
 #if($_client_ip)
-    #message("sendemailaction.email.ip-address"): $_client_ip
+    #message("authentication-action.sendemailaction.email.ip-address"): $_client_ip
 #end
 
-#message("sendemailaction.email.user-agent"): $_user_agent
+#message("authentication-action.sendemailaction.email.user-agent"): $_user_agent
 
-#message("sendemailaction.email.ignore")
+#message("authentication-action.sendemailaction.email.ignore")
 #end
 #parse("layouts/text-email")
