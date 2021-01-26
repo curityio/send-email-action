@@ -103,7 +103,7 @@ public final class SendEmailActionAuthenticationAction implements Authentication
 
             try
             {
-                _emailSender.sendEmail(recipientMail, email, "sendemailaction/email/message");
+                _emailSender.sendEmail(recipientMail, email, "email/message");
             }
             catch (RuntimeException exception)
             {
