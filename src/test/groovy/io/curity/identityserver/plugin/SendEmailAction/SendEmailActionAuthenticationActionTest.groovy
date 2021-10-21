@@ -17,7 +17,6 @@
 package io.curity.identityserver.plugin.SendEmailAction
 
 import se.curity.identityserver.sdk.attribute.AccountAttributes
-import se.curity.identityserver.sdk.attribute.Attribute
 import se.curity.identityserver.sdk.attribute.AuthenticationAttributes
 import se.curity.identityserver.sdk.attribute.ContextAttributes
 import se.curity.identityserver.sdk.attribute.SubjectAttributes
@@ -25,13 +24,10 @@ import se.curity.identityserver.sdk.authentication.AuthenticatedSessions
 import se.curity.identityserver.sdk.authenticationaction.AuthenticationActionResult
 import se.curity.identityserver.sdk.service.AccountManager
 import se.curity.identityserver.sdk.service.EmailSender
-import se.curity.identityserver.sdk.service.SessionManager
 import se.curity.identityserver.sdk.service.authenticationaction.AuthenticatorDescriptor
+import se.curity.identityserver.sdk.web.Request
 import spock.lang.Specification
 
-import static io.curity.identityserver.plugin.SendEmailAction.SendEmailActionAuthenticationAction.CLIENT_IP_ATTRIBUTE
-import static io.curity.identityserver.plugin.SendEmailAction.SendEmailActionAuthenticationAction.REQUEST_DATA_IN_SESSION
-import static io.curity.identityserver.plugin.SendEmailAction.SendEmailActionAuthenticationAction.USER_AGENT_ATTRIBUTE
 
 class SendEmailActionAuthenticationActionTest extends Specification
 {
@@ -40,37 +36,18 @@ class SendEmailActionAuthenticationActionTest extends Specification
     def authenticationTransactionId = "someID"
     def authenticatorDescriptor = Mock(AuthenticatorDescriptor)
 
-    def "should redirect to handler if no request data in session"()
-    {
-        given:
-        def configuration = new TestConfiguration(
-                Mock(EmailSender),
-                Optional.empty(),
-                Mock(SessionManager)
-        )
-
-        def action = new SendEmailActionAuthenticationAction(configuration)
-
-        when:
-        def result = action.apply(authenticationAttributes, authenticatedSessions, authenticationTransactionId, authenticatorDescriptor)
-
-        then:
-        result instanceof AuthenticationActionResult.PendingCompletionAuthenticationActionResult
-    }
-
     def "should send email to subject, when no accountManager present"()
     {
         given:
         authenticationAttributes = AuthenticationAttributes.of("michal@curity.io", ContextAttributes.empty())
-        def sessionManager = getSessionManagerWithRequestData()
+        def request = getRequestData()
         def emailSender = Mock(EmailSender)
         def configuration = new TestConfiguration(
                 emailSender,
-                Optional.empty(),
-                sessionManager
+                Optional.empty()
         )
 
-        def action = new SendEmailActionAuthenticationAction(configuration)
+        def action = new SendEmailActionAuthenticationAction(configuration, request)
 
         when:
         def result = action.apply(authenticationAttributes, authenticatedSessions, authenticationTransactionId, authenticatorDescriptor)
@@ -84,18 +61,17 @@ class SendEmailActionAuthenticationActionTest extends Specification
     {
         given:
         authenticationAttributes = AuthenticationAttributes.of("michal@curity.io", ContextAttributes.empty())
-        def sessionManager = getSessionManagerWithRequestData()
+        def request = getRequestData()
         def emailSender = Mock(EmailSender)
         def accountManager = Mock(AccountManager)
         accountManager.useUsernameAsEmail() >> true
 
         def configuration = new TestConfiguration(
                 emailSender,
-                Optional.of(accountManager),
-                sessionManager
+                Optional.of(accountManager)
         )
 
-        def action = new SendEmailActionAuthenticationAction(configuration)
+        def action = new SendEmailActionAuthenticationAction(configuration, request)
 
         when:
         def result = action.apply(authenticationAttributes, authenticatedSessions, authenticationTransactionId, authenticatorDescriptor)
@@ -109,7 +85,7 @@ class SendEmailActionAuthenticationActionTest extends Specification
     {
         given:
         authenticationAttributes = AuthenticationAttributes.of("michal", ContextAttributes.empty())
-        def sessionManager = getSessionManagerWithRequestData()
+        def request = getRequestData()
         def emailSender = Mock(EmailSender)
         def accountManager = Mock(AccountManager)
         accountManager.useUsernameAsEmail() >> false
@@ -117,11 +93,10 @@ class SendEmailActionAuthenticationActionTest extends Specification
 
         def configuration = new TestConfiguration(
                 emailSender,
-                Optional.of(accountManager),
-                sessionManager
+                Optional.of(accountManager)
         )
 
-        def action = new SendEmailActionAuthenticationAction(configuration)
+        def action = new SendEmailActionAuthenticationAction(configuration, request)
 
         when:
         def result = action.apply(authenticationAttributes, authenticatedSessions, authenticationTransactionId, authenticatorDescriptor)
@@ -135,7 +110,7 @@ class SendEmailActionAuthenticationActionTest extends Specification
     {
         given:
         authenticationAttributes = AuthenticationAttributes.of("michal", ContextAttributes.empty())
-        def sessionManager = getSessionManagerWithRequestData()
+        def request = getRequestData()
         def emailSender = Mock(EmailSender)
         def accountManager = Mock(AccountManager)
         accountManager.useUsernameAsEmail() >> false
@@ -143,11 +118,10 @@ class SendEmailActionAuthenticationActionTest extends Specification
 
         def configuration = new TestConfiguration(
                 emailSender,
-                Optional.of(accountManager),
-                sessionManager
+                Optional.of(accountManager)
         )
 
-        def action = new SendEmailActionAuthenticationAction(configuration)
+        def action = new SendEmailActionAuthenticationAction(configuration, request)
 
         when:
         def result = action.apply(authenticationAttributes, authenticatedSessions, authenticationTransactionId, authenticatorDescriptor)
@@ -162,17 +136,16 @@ class SendEmailActionAuthenticationActionTest extends Specification
     {
         given:
         authenticationAttributes = AuthenticationAttributes.of("michal@curity.io", ContextAttributes.empty())
-        def sessionManager = getSessionManagerWithRequestData()
+        def request = getRequestData()
         def emailSender = Mock(EmailSender)
         emailSender("michal@curity.io", _, _) >> { throw new RuntimeException("Couldn't send e-mail") }
 
         def configuration = new TestConfiguration(
                 emailSender,
-                Optional.empty(),
-                sessionManager
+                Optional.empty()
         )
 
-        def action = new SendEmailActionAuthenticationAction(configuration)
+        def action = new SendEmailActionAuthenticationAction(configuration, request)
 
         when:
         def result = action.apply(authenticationAttributes, authenticatedSessions, authenticationTransactionId, authenticatorDescriptor)
@@ -188,16 +161,15 @@ class SendEmailActionAuthenticationActionTest extends Specification
         authenticationAttributes = AuthenticationAttributes.of(
                 SubjectAttributes.of(["subject": "michal@curity.io", "sendemailaction-should-send-email": true]),
                 ContextAttributes.empty())
-        def sessionManager = getSessionManagerWithRequestData()
+        def request = getRequestData()
         def emailSender = Mock(EmailSender)
         def configuration = new TestConfiguration(
                 emailSender,
                 Optional.empty(),
-                sessionManager,
                 false
         )
 
-        def action = new SendEmailActionAuthenticationAction(configuration)
+        def action = new SendEmailActionAuthenticationAction(configuration, request)
 
         when:
         def result = action.apply(authenticationAttributes, authenticatedSessions, authenticationTransactionId, authenticatorDescriptor)
@@ -211,17 +183,16 @@ class SendEmailActionAuthenticationActionTest extends Specification
     {
         given:
         authenticationAttributes = AuthenticationAttributes.of("michal@curity.io", ContextAttributes.empty())
-        def sessionManager = getSessionManagerWithRequestData()
+        def request = getRequestData()
         def emailSender = Mock(EmailSender)
         def configuration = new TestConfiguration(
                 emailSender,
                 Optional.empty(),
-                sessionManager,
                 true,
                 true
         )
 
-        def action = new SendEmailActionAuthenticationAction(configuration)
+        def action = new SendEmailActionAuthenticationAction(configuration, request)
 
         when:
         def result = action.apply(authenticationAttributes, authenticatedSessions, authenticationTransactionId, authenticatorDescriptor)
@@ -233,18 +204,15 @@ class SendEmailActionAuthenticationActionTest extends Specification
 
     private class TestConfiguration implements SendEmailActionAuthenticationActionConfig
     {
-
         def _emailSender
         def _accountManager
-        def _sessionManager
         def _shouldAlwaysSendEmail
         def _doNotSendIpAddress
 
-        TestConfiguration(def emailSender, def accountManager, def sessionManager, def shouldAlwaysSendEmail = true, def doNotSendIpAddress = false)
+        TestConfiguration(def emailSender, def accountManager, def shouldAlwaysSendEmail = true, def doNotSendIpAddress = false)
         {
             _emailSender = emailSender
             _accountManager = accountManager
-            _sessionManager = sessionManager
             _shouldAlwaysSendEmail = shouldAlwaysSendEmail
             _doNotSendIpAddress = doNotSendIpAddress
         }
@@ -268,12 +236,6 @@ class SendEmailActionAuthenticationActionTest extends Specification
         }
 
         @Override
-        SessionManager getSessionManager()
-        {
-            return _sessionManager
-        }
-
-        @Override
         Boolean getDoNotSendIpAddressInEmail()
         {
             return _doNotSendIpAddress
@@ -286,12 +248,11 @@ class SendEmailActionAuthenticationActionTest extends Specification
         }
     }
 
-    private def getSessionManagerWithRequestData()
+    private def getRequestData()
     {
-        def sessionManager = Mock(SessionManager)
-        sessionManager.get(REQUEST_DATA_IN_SESSION) >> Attribute.ofFlag(REQUEST_DATA_IN_SESSION)
-        sessionManager.get(CLIENT_IP_ATTRIBUTE) >> Attribute.of(CLIENT_IP_ATTRIBUTE, "127.0.0.1")
-        sessionManager.get(USER_AGENT_ATTRIBUTE) >> Attribute.of(USER_AGENT_ATTRIBUTE, "(spock tests)")
-        sessionManager
+        def request = Stub(Request)
+        request.getClientIpAddress() >> "127.0.0.2"
+        request.getHeaders().firstValue("User-Agent") >> "(spock tests)"
+        request
     }
 }
