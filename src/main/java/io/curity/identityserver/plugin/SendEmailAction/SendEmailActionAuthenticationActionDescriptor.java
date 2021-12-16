@@ -17,12 +17,9 @@
 package io.curity.identityserver.plugin.SendEmailAction;
 
 import se.curity.identityserver.sdk.authenticationaction.AuthenticationAction;
-import se.curity.identityserver.sdk.authenticationaction.completions.ActionCompletionRequestHandler;
 import se.curity.identityserver.sdk.plugin.ManagedObject;
 import se.curity.identityserver.sdk.plugin.descriptor.AuthenticationActionPluginDescriptor;
 
-import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 
 public final class SendEmailActionAuthenticationActionDescriptor implements AuthenticationActionPluginDescriptor<SendEmailActionAuthenticationActionConfig>
@@ -49,11 +46,5 @@ public final class SendEmailActionAuthenticationActionDescriptor implements Auth
     public Optional<? extends ManagedObject<SendEmailActionAuthenticationActionConfig>> createManagedObject(SendEmailActionAuthenticationActionConfig configuration)
     {
         return Optional.empty();
-    }
-
-    @Override
-    public Map<String, Class<? extends ActionCompletionRequestHandler<?>>> getAuthenticationActionRequestHandlerTypes()
-    {
-        return Collections.singletonMap("index", SendEmailActionAuthenticationActionHandler.class);
     }
 }

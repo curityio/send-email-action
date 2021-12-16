@@ -28,8 +28,8 @@ import se.curity.identityserver.sdk.authenticationaction.AuthenticationActionRes
 import se.curity.identityserver.sdk.data.email.Email;
 import se.curity.identityserver.sdk.service.AccountManager;
 import se.curity.identityserver.sdk.service.EmailSender;
-import se.curity.identityserver.sdk.service.SessionManager;
 import se.curity.identityserver.sdk.service.authenticationaction.AuthenticatorDescriptor;
+import se.curity.identityserver.sdk.web.Request;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -39,33 +39,27 @@ import java.util.Map;
 import java.util.Optional;
 
 import static java.time.format.DateTimeFormatter.RFC_1123_DATE_TIME;
-import static se.curity.identityserver.sdk.authenticationaction.completions.RequiredActionCompletion.PromptUser.prompt;
-
 
 public final class SendEmailActionAuthenticationAction implements AuthenticationAction
 {
     private static final Logger _logger = LoggerFactory.getLogger(SendEmailActionAuthenticationAction.class);
     private static final String SHOULD_SEND_EMAIL_PARAM = "sendemailaction-should-send-email";
 
-    static final String CLIENT_IP_ATTRIBUTE = "sendemailaction:client-ip";
-    static final String USER_AGENT_ATTRIBUTE = "sendemailaction:user-agent";
-    static final String REQUEST_DATA_IN_SESSION = "sendemailaction:request-data-in-session";
-
     private final boolean _alwaysSendEmail;
     private final EmailSender _emailSender;
     private final AccountManager _accountManager;
-    private final SessionManager _sessionManager;
     private final DateTimeFormatter _formatter;
     private final boolean _emailShouldIncludeIpAddress;
+    private final Request _request;
 
-    public SendEmailActionAuthenticationAction(SendEmailActionAuthenticationActionConfig configuration)
+    public SendEmailActionAuthenticationAction(SendEmailActionAuthenticationActionConfig configuration, Request request)
     {
         _emailSender = configuration.getEmailSender();
         _alwaysSendEmail = configuration.getAlwaysSendEmailNotification();
         _accountManager = configuration.getAccountManager().orElse(null);
-        _sessionManager = configuration.getSessionManager();
         _formatter = RFC_1123_DATE_TIME.withZone(ZoneId.of("GMT"));
         _emailShouldIncludeIpAddress = !configuration.getDoNotSendIpAddressInEmail();
+        _request = request;
     }
 
     @Override
@@ -74,19 +68,6 @@ public final class SendEmailActionAuthenticationAction implements Authentication
                                             String authenticationTransactionId,
                                             AuthenticatorDescriptor authenticatorDescriptor)
     {
-        /*
-         To get data from the Request object we need to go through an action controller. Redirecting the flow to the
-         controller is done with returning a `pendingResult`. Then in the controller we can retrieve the data we need,
-         add it to the session and return a result of `ActionCompletionResult.complete()`, which will send us back here.
-         The REQUEST_DATA_IN_SESSION flag is stored in session to avoid a loop.
-         */
-
-        Attribute requestDataInSession = _sessionManager.get(REQUEST_DATA_IN_SESSION);
-
-        if (requestDataInSession == null)
-        {
-            return AuthenticationActionResult.pendingResult(prompt());
-        }
 
         if (shouldSendEmail(authenticationAttributes))
         {
@@ -112,8 +93,8 @@ public final class SendEmailActionAuthenticationAction implements Authentication
                                 "data. username: {}, IP: {}, User-agent: {}, time of login: {}",
                         recipientMail,
                         authenticationAttributes.getSubject(),
-                        _sessionManager.get(CLIENT_IP_ATTRIBUTE).getValue(),
-                        _sessionManager.get(USER_AGENT_ATTRIBUTE).getValue(),
+                        _request.getClientIpAddress(),
+                        _request.getHeaders().firstValue("User-Agent"),
                         _formatter.format(Instant.ofEpochSecond(authenticationAttributes.getAuthTime())),
                         exception
                 );
@@ -158,11 +139,11 @@ public final class SendEmailActionAuthenticationAction implements Authentication
 
         String formattedDateTime = _formatter.format(Instant.ofEpochSecond(attributes.getAuthTime()));
         model.put("_time", formattedDateTime);
-        model.put("_user_agent", _sessionManager.get(USER_AGENT_ATTRIBUTE).getValue());
+        model.put("_user_agent", _request.getHeaders().firstValue("User-Agent"));
 
         if (_emailShouldIncludeIpAddress)
         {
-            model.put("_client_ip", _sessionManager.get(CLIENT_IP_ATTRIBUTE).getValue());
+            model.put("_client_ip", _request.getClientIpAddress());
         }
 
         return new Email(model);

@@ -21,7 +21,6 @@ import se.curity.identityserver.sdk.config.annotation.DefaultBoolean;
 import se.curity.identityserver.sdk.config.annotation.Description;
 import se.curity.identityserver.sdk.service.AccountManager;
 import se.curity.identityserver.sdk.service.EmailSender;
-import se.curity.identityserver.sdk.service.SessionManager;
 
 import java.util.Optional;
 
@@ -39,6 +38,4 @@ public interface SendEmailActionAuthenticationActionConfig extends Configuration
     EmailSender getEmailSender();
 
     Optional<AccountManager> getAccountManager();
-
-    SessionManager getSessionManager();
 }
