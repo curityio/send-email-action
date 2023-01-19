@@ -26,16 +26,10 @@ Installing the Plugin
 To install the plugin, copy the compiled JAR (and all of its dependencies) into the :file:`${IDSVR_HOME}/usr/share/plugins/${pluginGroup}`
 on each node, including the admin node. For more information about installing plugins, refer to `curity.io/plugins`_.
 
-The plugin uses templates for the e-mail as well as localized messages inside those templates. To use templates and the
-provided text, copy those files accordingly:
-
-- templates from the `/templates` directory to :file:`${IDSVR_HOME}/usr/share/templates/overrides/`
-- messages from the `/messages` directory to :file:`${IDSVR_HOME}/usr/share/messages/overrides/`
-
 Required Dependencies
 """""""""""""""""""""
 
-You need at least version 5.2. of the Curity Identity Server to use this plugin.
+You need at least version 7.3. of the Curity Identity Server to use this plugin.
 
 For a list of the dependencies and their versions, run ``mvn dependency:list``. Ensure that all of these are installed in
 the plugin group. Otherwise, they will not be accessible to this plug-in and run-time errors will result.
@@ -44,8 +38,11 @@ Customizing the Plugin
 ~~~~~~~~~~~~~~~~~~~~~~
 
 If you want to customize the e-mail sent by the plugin you can change the messages and template files provided in this
-repository. Refer to `curity.io/templates`_ for more information on overriding templates.
+repository.
 
+The messages are deployed to :file:`${IDSVR_HOME}/var/.plugins/messages/core/en/sendemailaction/` and the template to template is deployed to :file:`${IDSVR_HOME}/var/.plugins/templates/authentication-action/sendemailaction/email`. Both the messages and the template can be edited in these locations after the plugin is deployed.
+
+Refer to `curity.io/templates`_ for more information on overriding templates.
 
 Configuring the Plugin
 ~~~~~~~~~~~~~~~~~~~~~~

@@ -22,13 +22,12 @@ import se.curity.identityserver.sdk.Nullable;
 import se.curity.identityserver.sdk.attribute.AccountAttributes;
 import se.curity.identityserver.sdk.attribute.Attribute;
 import se.curity.identityserver.sdk.attribute.AuthenticationAttributes;
-import se.curity.identityserver.sdk.authentication.AuthenticatedSessions;
 import se.curity.identityserver.sdk.authenticationaction.AuthenticationAction;
+import se.curity.identityserver.sdk.authenticationaction.AuthenticationActionContext;
 import se.curity.identityserver.sdk.authenticationaction.AuthenticationActionResult;
 import se.curity.identityserver.sdk.data.email.Email;
 import se.curity.identityserver.sdk.service.AccountManager;
 import se.curity.identityserver.sdk.service.EmailSender;
-import se.curity.identityserver.sdk.service.authenticationaction.AuthenticatorDescriptor;
 import se.curity.identityserver.sdk.web.Request;
 
 import java.time.Instant;
@@ -63,11 +62,9 @@ public final class SendEmailActionAuthenticationAction implements Authentication
     }
 
     @Override
-    public AuthenticationActionResult apply(AuthenticationAttributes authenticationAttributes,
-                                            AuthenticatedSessions authenticatedSessions,
-                                            String authenticationTransactionId,
-                                            AuthenticatorDescriptor authenticatorDescriptor)
+    public AuthenticationActionResult apply(AuthenticationActionContext context)
     {
+        AuthenticationAttributes authenticationAttributes = context.getAuthenticationAttributes();
 
         if (shouldSendEmail(authenticationAttributes))
         {
